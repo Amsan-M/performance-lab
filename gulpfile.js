@@ -1,8 +1,6 @@
 var gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     notify = require('gulp-notify'),
-    sass = require('gulp-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
     browserSync = require('browser-sync');
 
 
@@ -13,17 +11,28 @@ var plumberErrorHandler = {
    })
 };
 
+var sass = require('gulp-sass'),
+autoprefixer = require('gulp-autoprefixer'),
+cssnano = require('gulp-cssnano'), 
+rename = require("gulp-rename");
+
 var uglify = require("gulp-uglify"),
   rename = require("gulp-rename");
 
+  
+
 gulp.task('sass', function() {
-   gulp.src('./sass/*.scss')
+    return gulp
+      .src('./sass/style.scss')
       .pipe(plumber(plumberErrorHandler))
       .pipe(sass())
       .pipe(autoprefixer({
          browsers: ['last 2 versions']
       }))
       .pipe(gulp.dest('./build/css'))
+      .pipe(cssnano())
+      .pipe(rename("style.min.css"))
+      .pipe(gulp.dest("./build/css"));
 });
 
 gulp.task('scripts', function(){
@@ -51,11 +60,13 @@ gulp.task('watch', function() {
  
 gulp.task("gulp-uglify", function() {
   return gulp
-    .src("./js/*.js") // What files do we want gulp to consume?
-    .pipe(uglify()) // Call the uglify function on these files
-    .pipe(rename({ extname: ".min.js" })) // Rename the uglified file
-    .pipe(gulp.dest("./build/js")); // Where do we put the result?
+    .src("./js/*.js")
+    .pipe(uglify()) 
+    .pipe(rename({ extname: ".min.js" })) 
+    .pipe(gulp.dest("./build/js")); 
 });
  
 
-gulp.task('default', ['watch', 'browser-sync', 'gulp-uglify']);
+
+
+gulp.task('default', ['watch', 'browser-sync', 'gulp-uglify', 'sass',]);
