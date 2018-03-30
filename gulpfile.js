@@ -5,12 +5,16 @@ var gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
     browserSync = require('browser-sync');
 
+
 var plumberErrorHandler = {
    errorHandler: notify.onError({
       title: 'Gulp',
       message: 'Error: <%= error.message %>'
    })
 };
+
+var uglify = require("gulp-uglify"),
+  rename = require("gulp-rename");
 
 gulp.task('sass', function() {
    gulp.src('./sass/*.scss')
@@ -42,4 +46,16 @@ gulp.task('watch', function() {
    gulp.watch('js/*.js', ['scripts']);
 });
 
-gulp.task('default', ['watch', 'browser-sync']);
+
+
+ 
+gulp.task("gulp-uglify", function() {
+  return gulp
+    .src("./js/*.js") // What files do we want gulp to consume?
+    .pipe(uglify()) // Call the uglify function on these files
+    .pipe(rename({ extname: ".min.js" })) // Rename the uglified file
+    .pipe(gulp.dest("./build/js")); // Where do we put the result?
+});
+ 
+
+gulp.task('default', ['watch', 'browser-sync', 'gulp-uglify']);
